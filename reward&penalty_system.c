@@ -3,6 +3,7 @@
 #include<string.h>
 #include<memory.h>
 
+//상점 구조체 (상점, 상점 받은 이유, 벌점 받은 이유) 
 typedef struct Point
 {
 	char preason[300];
@@ -10,6 +11,7 @@ typedef struct Point
 	int point;
 }Point;
 
+//학생 구조체 (학번, 이름, 포인트(상점 구조체)) 
 typedef struct element
 {
 	int number;
@@ -17,6 +19,7 @@ typedef struct element
    	Point point;
 }element;
 
+//이진트리 (왼쪽 노드, 오른쪽 노드, 키(학생 구조체)) 
 typedef struct TreeNode
 {
    element key;
@@ -24,6 +27,7 @@ typedef struct TreeNode
    struct TreeNode* right;
 }TreeNode;
 
+//왼쪽 노드로 갈지 오른쪽 노드로 갈지 정하는 함수  
 int compare(element e1, element e2)
 {
 	if(e1.number > e2.number)
@@ -40,11 +44,12 @@ int compare(element e1, element e2)
 	}
 }
 
+
+// 학생 리스트 뽑는 함수 전위순회
 void display(TreeNode* p)
 {
 	if(p!=NULL)
 	{
-		display(p->left);
 		printf("\n*-----------------------*\n");
 		printf("\n학번: %d\n",p->key.number);
 		printf("\n이름: %s\n",p->key.name);
@@ -52,11 +57,13 @@ void display(TreeNode* p)
 		printf("\n최근상점 받은 이유 : %s\n",p->key.point.preason);
 		printf("\n최근별점 받은 이유 : %s\n",p->key.point.mreason);
 		printf("\n*-----------------------*\n");
-		display(p->right);
+		
+		display(p->left);
+		display(p->right); 
 	}
 } 
 
-//이진탐색트리 탐색함수
+//이진트리 탐색함수(이진 탐색)
 TreeNode* search(TreeNode* root, element key)
 {
 	TreeNode* p = root;
@@ -79,16 +86,18 @@ TreeNode* search(TreeNode* root, element key)
 	return p;
 } 
 
+//새로운 노드 만드는 함수  
 TreeNode* new_node(element item)
 {
 	TreeNode* temp = (TreeNode*)malloc(sizeof(TreeNode));//노드 동적할당
 	
 	temp->key = item;
 	temp->left = temp->right = NULL; 
-	printf("학생 등록 완료");
+	printf(">> 학생 등록 완료");
 	return temp;
 }
 
+//노드 삽입하는 함수 
 TreeNode* insert_node(TreeNode* node, element key)
 {
 	if(node==NULL)
@@ -105,7 +114,7 @@ TreeNode* insert_node(TreeNode* node, element key)
 	}
 	else
 	{
-		printf("이미 있는 학생입니다.");
+		printf(">> 이미 있는 학생입니다.");
 	}
 	
 	return node;
@@ -144,6 +153,7 @@ TreeNode* delete_node(TreeNode* root, element key){
 	return root;
 }
 
+//메뉴 프린트하는 함수 
 void menu()
 {
 	printf("\n*------------ 상벌점 시스템 -----------*\n");
@@ -158,9 +168,10 @@ void menu()
 	printf("\n메뉴 입력 >> ");
 }
 
+//메인 함수 
 int main()
 {
-	int command;
+	int command; 
   	int pluspoint, minuspoint;
 	element e;
 	TreeNode* root = NULL;
@@ -187,10 +198,10 @@ int main()
 			case 2:
 				printf("학번: ");
 				scanf("%d",&e.number);
-				tmp = search(root,e);//탐색함수 실행
+				tmp = search(root,e);
 				if(tmp!= NULL)
 				{
-					root = delete_node(root,e);// 삭제 함수 실행
+					root = delete_node(root,e);
 					printf(">> 삭제 완료");
 				}
 				else
@@ -203,45 +214,48 @@ int main()
 			case 3:
 				printf("학번: ");
 				scanf("%d",&e.number);
-        		printf("추가 할 점수: ");
-        		scanf("%d", &pluspoint);
+				
+				tmp = search(root,e);
         		
-				tmp = search(root,e);//탐색함수 실행
 				if(tmp!= NULL)
 				{
+					printf("추가 할 점수: ");
+        			scanf("%d", &pluspoint);
 					tmp->key.point.point = tmp->key.point.point + pluspoint;
+					printf("이유: ");
+        			scanf("%s", &tmp->key.point.preason);
 				}
 				else
 				{
 					printf(">> 그런 학생 없습니다.");
 				}
 				
-				printf("이유: ");
-        		scanf("%s", &tmp->key.point.preason);
 				break;
 				
 			case 4:
 				printf("학번: ");
 				scanf("%d",&e.number);
-        		printf("벌점 점수: ");
-        		scanf("%d", &minuspoint);
-				tmp = search(root,e);//탐색함수 실행
+				
+				tmp = search(root,e);
+
 				if(tmp!=NULL)
 				{
+					printf("벌점 점수: ");
+        			scanf("%d", &minuspoint);
+        			printf("이유: ");
+        			scanf("%s", &tmp->key.point.mreason);
 					tmp->key.point.point = tmp->key.point.point - minuspoint;
 				}
 				else
 				{
 					printf(">> 그런 학생 없습니다.");
 				}
-				printf("이유: ");
-        		scanf("%s", &tmp->key.point.mreason);
 				break;
 				
 			case 5:
 				printf("학번: ");
 				scanf("%d",&e.number);
-				tmp = search(root,e);//탐색함수 실행
+				tmp = search(root,e);
 				if(tmp!= NULL)
 				{
 					printf("\n*-----------------------*\n");
@@ -259,13 +273,20 @@ int main()
 				break;
 				
       		case 6:
-          		display(root);
+      			if(root != NULL)
+				{
+      				display(root);
+				}
+				else if(root == NULL)
+				{
+					printf(">> 없음");
+				}
           		printf("\n");
           		break;
 		}	 	
 	}while(command!=7);
 	
-	printf(">종료되었습니다.");
+	printf(">> 종료되었습니다.");
 	
 	return 0; 
 }
